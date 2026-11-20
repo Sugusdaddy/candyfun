@@ -36,7 +36,7 @@ keeper/         indexer, fee claim, weekly airdrop
   scripts/          keygen, create-platform, chain-check, sim-launch
 ```
 
-**Launch flow.** The browser generates the mint keypair. `POST /api/launch` validates the coin, sizes the curve in USD (every coin starts at `START_MCAP_USD` whatever its pair), quotes the vamp fee, uploads metadata and returns an unsigned transaction. The wallet signs, then the mint keypair signs in the browser, and `POST /api/launch/submit` relays it. The server checks the signed message is byte-for-byte the one it built and lists the coin once its pool exists on-chain with the launcher as creator.
+**Launch flow.** The browser generates the mint keypair. `POST /api/launch` validates the coin, sizes the curve in USD (every coin starts at `START_MCAP_USD` whatever its pair), quotes the vamp fee, uploads metadata and returns an unsigned transaction. The wallet signs, then the mint keypair signs in the browser, and `POST /api/launch/submit` relays it. The server checks the signed transaction still creates that pool under the platform (and still carries the vamp fee, if any; wallets may add their own instructions) and lists the coin once its pool exists on-chain with the launcher as creator.
 
 **Fee flow.** LaunchLab pays the platform fee into one vault per pair token. The keeper claims each vault into the pot, swaps non-SOL pots to SOL, and after each week ends pays the pot to that week's top 100 by volume. A creator's trades on their own coin don't count; wallets with more than 300 trades in an hour are left out for that week. Wash trading loses money by construction: it costs 0.35% of volume and the pot is 0.1% of it.
 

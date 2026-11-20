@@ -1,16 +1,16 @@
 // Step 2 of a launch: the fully signed transaction comes back, we relay it and list the coin once
 // its pool exists on-chain under Candyfun's platform with the launcher as creator.
 //
-// The server relays only the exact message it built in step 1 (checked by hash), so nothing can be
-// swapped into the transaction between the two steps.
+// The server relays the transaction only if it still does what step 1 built (see checkLaunchTx).
 import { NextRequest, NextResponse } from "next/server";
-import crypto from "node:crypto";
 import { PublicKey, VersionedTransaction } from "@solana/web3.js";
-import { PLATFORM_ID, SOL_MINT } from "@/lib/config";
+import { FEE_WALLET, LAUNCHPAD_PROGRAM, PLATFORM_ID, SOL_MINT } from "@/lib/config";
+
+const SYSTEM_PROGRAM = "11111111111111111111111111111111";
 import { K, kv } from "@/lib/kv";
 import { viewPool } from "@/lib/launchlab";
 import { rpc } from "@/lib/solana";
-import { addCoin, getLaunch, putLaunch, type Coin } from "@/lib/store";
+import { addCoin, getLaunch, putLaunch, type Coin, type PendingLaunch } from "@/lib/store";
 import { confirmLocks, recordAndFlag, release } from "@/lib/vamp";
 
 export const runtime = "nodejs";
@@ -18,6 +18,36 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 90;
 
 const bad = (error: string, status = 400) => NextResponse.json({ error }, { status });
+
+/**
+ * Wallets are allowed to touch a transaction before signing it (Phantom adds its own guard and
+ * priority-fee instructions), so the signed message is not byte-identical to the one we built.
+ * What must hold: the launcher pays, it creates this launch's pool under our platform, and a copy
+ * still carries its anti-vamp fee to the fee wallet. Everything else is checked on-chain afterwards.
+ */
+function checkLaunchTx(tx: VersionedTransaction, launch: PendingLaunch): string | null {
+  const keys = tx.message.staticAccountKeys.map((k) => k.toBase58());
+  if (keys[0] !== launch.payer) return "The launch must be signed and paid by the launching wallet";
+  const has = (k: string) => keys.includes(k);
+  if (!has(LAUNCHPAD_PROGRAM) || !has(PLATFORM_ID) || !has(launch.poolId) || !has(launch.mint)) return "This is not the launch transaction we built";
+  const creates = tx.message.compiledInstructions.some((ix) => {
+    if (keys[ix.programIdIndex] !== LAUNCHPAD_PROGRAM) return false;
+    const accts = ix.accountKeyIndexes.map((i) => keys[i]);
+    return accts.includes(PLATFORM_ID) && accts.includes(launch.poolId) && accts.includes(launch.mint);
+  });
+  if (!creates) return "This is not the launch transaction we built";
+  if (launch.vampFeeLamports > 0) {
+    const paid = tx.message.compiledInstructions.some((ix) => {
+      if (keys[ix.programIdIndex] !== SYSTEM_PROGRAM || ix.data.length !== 12) return false;
+      const data = Buffer.from(ix.data);
+      if (data.readUInt32LE(0) !== 2) return false; // SystemProgram.transfer
+      const [from, to] = ix.accountKeyIndexes.map((i) => keys[i]);
+      return from === launch.payer && to === FEE_WALLET && data.readBigUInt64LE(4) >= BigInt(launch.vampFeeLamports);
+    });
+    if (!paid) return "The anti-vamp fee is missing from this launch";
+  }
+  return null;
+}
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 export async function POST(req: NextRequest) {
@@ -41,7 +71,8 @@ export async function POST(req: NextRequest) {
     } catch {
       return bad("Invalid transaction");
     }
-    if (crypto.createHash("sha256").update(tx.message.serialize()).digest("hex") !== launch.messageSha) return bad("This is not the launch transaction we built");
+    const why = checkLaunchTx(tx, launch);
+    if (why) return bad(why);
     try {
       sig = await conn.sendRawTransaction(tx.serialize(), { maxRetries: 5 });
     } catch (e: any) {
