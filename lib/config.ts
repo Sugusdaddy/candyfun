@@ -4,13 +4,16 @@ export const SITE_NAME = "Candyfun";
 export const SITE_TAGLINE = "The launchpad that keeps nothing.";
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3900";
 export const X_URL = process.env.NEXT_PUBLIC_X_URL || "";
-export const GITHUB_URL = process.env.NEXT_PUBLIC_GITHUB_URL || "";
+export const GITHUB_URL = process.env.NEXT_PUBLIC_GITHUB_URL || "https://github.com/Sugusdaddy/candyfun";
 export const RPC_URL = process.env.NEXT_PUBLIC_RPC_URL || "https://api.mainnet-beta.solana.com";
 
-/** Candyfun's Raydium LaunchLab platform config. Every coin is created under it. */
-export const PLATFORM_ID = process.env.NEXT_PUBLIC_PLATFORM_ID || "";
+/**
+ * Candyfun's Raydium LaunchLab platform config (live on mainnet). Every coin is created under it.
+ * Running your own fork? Create your own with `npm run platform` and set these two.
+ */
+export const PLATFORM_ID = process.env.NEXT_PUBLIC_PLATFORM_ID || "6vbmGXmNBY9SbP69HGcQhp7ZbwVxsV6cpcufPzjCTKR4";
 /** Claims the 0.1% and pays it back to traders every week. Holds nothing else. */
-export const FEE_WALLET = process.env.NEXT_PUBLIC_FEE_WALLET || "";
+export const FEE_WALLET = process.env.NEXT_PUBLIC_FEE_WALLET || "9d98srLgHbq9WphRK89pkssDKrmmrVdf4hGeYtEt9oFg";
 
 export const LAUNCHPAD_PROGRAM = "LanMV9sAd7wArD4vJFi2qDdfnVhFxYSUg6eADduJ3uj";
 export const LAUNCHLAB_AUTHORITY = "WLHv2UAZm6z4KyaaELi5pjdbJh6RESMva1Rnn8pJVVh";

@@ -7,3 +7,5 @@ keys/
 !.env.example
 *.log
 tsconfig.tsbuildinfo
+
+.vercel

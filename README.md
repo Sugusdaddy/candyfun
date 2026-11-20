@@ -10,6 +10,18 @@ A memecoin launchpad that keeps nothing.
 
 There is no on-chain program here. Candyfun is one LaunchLab *platform config* (`feeRate` 1000 = 0.1%, creator fee 0, LP 100% burned at graduation), a Next.js site and a small keeper.
 
+## Live on mainnet
+
+Site: https://candyfun.vercel.app
+
+| What | Address |
+|---|---|
+| Platform config (0.1%, creator fee 0, LP 100% burned) | [`6vbmGXmNBY9SbP69HGcQhp7ZbwVxsV6cpcufPzjCTKR4`](https://solscan.io/account/6vbmGXmNBY9SbP69HGcQhp7ZbwVxsV6cpcufPzjCTKR4) |
+| Fee wallet (claims the 0.1%, pays the weekly airdrop) | [`9d98srLgHbq9WphRK89pkssDKrmmrVdf4hGeYtEt9oFg`](https://solscan.io/account/9d98srLgHbq9WphRK89pkssDKrmmrVdf4hGeYtEt9oFg) |
+| Platform admin | [`EompT2z5RdtHD7tQdT7z3TQA59YJsnJXenU7Aiv8Zqqg`](https://solscan.io/account/EompT2z5RdtHD7tQdT7z3TQA59YJsnJXenU7Aiv8Zqqg) |
+| Metadata uploader (Irys) | [`9acP9ncxfAR6vz1QDG2S7i4viX9P7e8xaZoKPWPJHycX`](https://solscan.io/account/9acP9ncxfAR6vz1QDG2S7i4viX9P7e8xaZoKPWPJHycX) |
+| Raydium LaunchLab | `LanMV9sAd7wArD4vJFi2qDdfnVhFxYSUg6eADduJ3uj` |
+
 ## How it is put together
 
 ```
