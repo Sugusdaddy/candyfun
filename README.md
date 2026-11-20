@@ -12,7 +12,7 @@ There is no on-chain program here. Candyfun is one LaunchLab *platform config* (
 
 ## Live on mainnet
 
-Site: https://candyfun.vercel.app
+Site: https://www.candylp.fun
 
 | What | Address |
 |---|---|

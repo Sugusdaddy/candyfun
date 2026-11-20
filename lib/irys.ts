@@ -38,7 +38,7 @@ export async function uploadTokenMetadata(input: { name: string; symbol: string;
     ...(input.website ? { website: input.website } : {}),
     ...(input.twitter ? { twitter: input.twitter } : {}),
     ...(input.telegram ? { telegram: input.telegram } : {}),
-    createdOn: process.env.NEXT_PUBLIC_SITE_URL || "https://candyfun.example",
+    createdOn: process.env.NEXT_PUBLIC_SITE_URL || "https://www.candylp.fun",
   };
   const metadataUri = await uploadBytes(irys, Buffer.from(JSON.stringify(metadata)), "application/json");
   return { imageUri, metadataUri };

@@ -52,4 +52,7 @@ else {
 if (live && live.platformCpCreator !== fee.publicKey.toBase58()) {
   await run("set CPMM creator → fee wallet", updatePlatformConfig(LAUNCHPAD_PROGRAM, admin.publicKey, platformId, { type: "updatePlatformCpCreator", value: fee.publicKey }));
 }
+// The site moved? Keep the platform's on-chain web and image pointing at it.
+if (live && live.web !== WEB) await run(`set web → ${WEB}`, updatePlatformConfig(LAUNCHPAD_PROGRAM, admin.publicKey, platformId, { type: "updateWeb", value: WEB }));
+if (live && live.img !== IMG) await run(`set img → ${IMG}`, updatePlatformConfig(LAUNCHPAD_PROGRAM, admin.publicKey, platformId, { type: "updateImg", value: IMG }));
 console.log(`\nSet in .env.local / your host:\n  NEXT_PUBLIC_PLATFORM_ID=${platformId.toBase58()}\n  NEXT_PUBLIC_FEE_WALLET=${fee.publicKey.toBase58()}`);
